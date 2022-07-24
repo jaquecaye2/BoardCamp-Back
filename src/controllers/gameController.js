@@ -1,12 +1,10 @@
 import connection from "../dbStrategy/postgres.js";
 
 export async function listarJogos(request, response) {
+  // pegar a query string passada e tratar ela
+  /*const name = request.query.name
 
-    // pegar a query string passada e tratar ela
-    const nomeJogo = request.query.name
-
-    console.log(nomeJogo)
-
+    console.log(name)*/
 
   // buscar todos os jogos do BD
   const { rows: games } = await connection.query("SELECT * FROM games");
