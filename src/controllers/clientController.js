@@ -1,7 +1,7 @@
 import connection from "../dbStrategy/postgres.js";
 
 export async function listarClientes(request, response) {
-  // buscar todas as categorias no BD e enviá-las para o front
+  // buscar todos os clientes no BD e enviá-los para o front
   const clientes = await connection.query("SELECT * FROM customers");
 
   response.send(clientes.rows);
@@ -56,7 +56,7 @@ export async function atualizarCliente(request, response) {
 
   console.log(atualizarCliente);
 
-  // inserir a nova categoria no BD
+  // inserir o cliente atualizado no BD
   //await connection.query(`UPDATE customers SET name=${atualizarCliente.name}, phone=${atualizarCliente.phone}, cpf=${atualizarCliente.cpf}, name=${atualizarCliente.birthday} WHERE id=$1`,[id]);
 
   response.status(200).send();

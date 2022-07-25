@@ -11,7 +11,7 @@ export async function listarJogos(request, response) {
 
   const gamesCompleto = [];
 
-  // para cada jogo listar, buscar qual a categoria desse jogo e inserir o nome como parte do objeto
+  // para cada jogo listado, buscar qual a categoria desse jogo e inserir o nome como parte do objeto
   for (let i = 0; i < games.length; i++) {
     const { rows: buscarCategoria } = await connection.query(
       `SELECT * FROM categories WHERE id='${games[i].categoryId}';`
