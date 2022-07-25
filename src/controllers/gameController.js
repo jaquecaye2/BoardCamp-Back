@@ -29,7 +29,7 @@ export async function listarJogos(request, response) {
   } else {
     // buscar todos os jogos do BD com a query
     const { rows: games } = await connection.query(
-      `SELECT * FROM games WHERE name LIKE '%${name}%'`
+      `SELECT * FROM games WHERE name ILIKE '%${name}%'`
     );
 
     const gamesCompleto = [];

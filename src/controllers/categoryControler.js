@@ -12,7 +12,7 @@ export async function inserirCategoria(request, response){
     const novaCategoria = request.body;
 
     // verificar se a categoria já não foi criada, se sim, retornar erro
-    const buscarCategoria = await connection.query(`SELECT * FROM categories WHERE name='${novaCategoria.name}';`)
+    const buscarCategoria = await connection.query(`SELECT * FROM categories WHERE name='${novaCategoria.name.toLowerCase()}';`)
 
     if (buscarCategoria.rows.length !== 0){
         response.status(409).send();
@@ -20,7 +20,7 @@ export async function inserirCategoria(request, response){
     }
 
     // inserir a nova categoria no BD
-    await connection.query(`INSERT INTO categories (name) VALUES ('${novaCategoria.name}');`)
+    await connection.query(`INSERT INTO categories (name) VALUES ('${novaCategoria.name.toLowerCase()}');`)
 
     response.status(201).send()
 }

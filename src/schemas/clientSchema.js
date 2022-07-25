@@ -1,4 +1,5 @@
 import joi from "joi";
+import dayjs from "dayjs";
 
 const clientSchema = joi.object({
   name: joi.string().required(),
@@ -10,10 +11,7 @@ const clientSchema = joi.object({
     .string()
     .regex(/[0-9]{11}/)
     .required(),
-  birthday: joi
-    .string()
-    .regex(/^\d{4}\-(0[1-9]|1[012])\-(0[1-9]|[12][0-9]|3[01])$/)
-    .required(),
+  birthday: joi.date().max(dayjs().format('YYYY-MM-DD')).required(),
 });
 
 export default clientSchema;
