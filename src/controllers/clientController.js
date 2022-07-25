@@ -1,10 +1,20 @@
 import connection from "../dbStrategy/postgres.js";
 
 export async function listarClientes(request, response) {
-  // buscar todos os clientes no BD e enviá-los para o front
-  const clientes = await connection.query("SELECT * FROM customers");
+  // pegar a query string passada e tratar ela
+  const { cpf } = request.query;
 
-  response.send(clientes.rows);
+  if (!cpf) {
+    // buscar todos os clientes no BD e enviá-los para o front
+    const clientes = await connection.query("SELECT * FROM customers");
+
+    response.send(clientes.rows);
+  } else {
+    // buscar todos os clientes no BD e enviá-los para o front
+    const clientes = await connection.query(`SELECT * FROM customers WHERE cpf LIKE '%${cpf}%'`);
+
+    response.send(clientes.rows);
+  }
 }
 
 export async function listarClienteId(request, response) {
@@ -49,15 +59,33 @@ export async function inserirCliente(request, response) {
 
 export async function atualizarCliente(request, response) {
   // pegar o id passado na rota
-  const { id } = request.params;
+  let { id } = request.params;
+  id = parseInt(id);
 
   // pegar os dados do novo input
   const atualizarCliente = request.body;
 
-  console.log(atualizarCliente);
+  // verificar se o cpf é de um cliente existente, q não é o atual cliente, se for, emitir erro
+  const { rows: buscarCPF } = await connection.query(
+    `SELECT * FROM customers WHERE cpf='${atualizarCliente.cpf}';`
+  );
+
+  if (buscarCPF[0].id !== id) {
+    if (buscarCPF.length !== 0) {
+      response.status(409).send();
+      return;
+    }
+  }
 
   // inserir o cliente atualizado no BD
-  //await connection.query(`UPDATE customers SET name=${atualizarCliente.name}, phone=${atualizarCliente.phone}, cpf=${atualizarCliente.cpf}, name=${atualizarCliente.birthday} WHERE id=$1`,[id]);
+  await connection.query(`
+  UPDATE customers
+  SET name = '${atualizarCliente.name}',
+      phone = '${atualizarCliente.phone}',
+      cpf = '${atualizarCliente.cpf}',
+      birthday = '${atualizarCliente.birthday}'
+  WHERE id=${id};
+  `);
 
   response.status(200).send();
 }

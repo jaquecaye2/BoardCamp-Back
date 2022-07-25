@@ -2,31 +2,55 @@ import connection from "../dbStrategy/postgres.js";
 
 export async function listarJogos(request, response) {
   // pegar a query string passada e tratar ela
-  /*const name = request.query.name
+  const { name } = request.query;
 
-    console.log(name)*/
+  if (!name) {
+    // buscar todos os jogos do BD
+    const { rows: games } = await connection.query("SELECT * FROM games");
 
-  // buscar todos os jogos do BD
-  const { rows: games } = await connection.query("SELECT * FROM games");
+    const gamesCompleto = [];
 
-  const gamesCompleto = [];
+    // para cada jogo listado, buscar qual a categoria desse jogo e inserir o nome como parte do objeto
+    for (let i = 0; i < games.length; i++) {
+      const { rows: buscarCategoria } = await connection.query(
+        `SELECT * FROM categories WHERE id='${games[i].categoryId}';`
+      );
 
-  // para cada jogo listado, buscar qual a categoria desse jogo e inserir o nome como parte do objeto
-  for (let i = 0; i < games.length; i++) {
-    const { rows: buscarCategoria } = await connection.query(
-      `SELECT * FROM categories WHERE id='${games[i].categoryId}';`
+      const gameCompleto = {
+        ...games[i],
+        categoryName: buscarCategoria[0].name,
+      };
+
+      gamesCompleto.push(gameCompleto);
+    }
+
+    // responder no final com a lista de jogos atualizada
+    response.send(gamesCompleto);
+  } else {
+    // buscar todos os jogos do BD com a query
+    const { rows: games } = await connection.query(
+      `SELECT * FROM games WHERE name LIKE '%${name}%'`
     );
 
-    const gameCompleto = {
-      ...games[i],
-      categoryName: buscarCategoria[0].name,
-    };
+    const gamesCompleto = [];
 
-    gamesCompleto.push(gameCompleto);
+    // para cada jogo listado, buscar qual a categoria desse jogo e inserir o nome como parte do objeto
+    for (let i = 0; i < games.length; i++) {
+      const { rows: buscarCategoria } = await connection.query(
+        `SELECT * FROM categories WHERE id='${games[i].categoryId}';`
+      );
+
+      const gameCompleto = {
+        ...games[i],
+        categoryName: buscarCategoria[0].name,
+      };
+
+      gamesCompleto.push(gameCompleto);
+    }
+
+    // responder no final com a lista de jogos atualizada
+    response.send(gamesCompleto);
   }
-
-  // responder no final com a lista de jogos atualizada
-  response.send(gamesCompleto);
 }
 
 export async function inserirJogo(request, response) {
